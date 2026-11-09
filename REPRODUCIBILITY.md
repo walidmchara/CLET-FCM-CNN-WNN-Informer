@@ -1,18 +1,22 @@
-# Reproducibility audit — Cleaner Engineering and Technology 2025
+# Experimental reproducibility
 
-- Article DOI: https://doi.org/10.1016/j.clet.2025.101061
-- Main code family: `fuzzy_informer`
-- Raw research data: **NOT bundled**. Supply actual dataset(s), correct train/test dates, units, target definitions and validation splits.
-- Architecture: **component-level implementation** from article's named blocks, *not* byte-identical author source. Confirm numbers of layers, kernels, Morlet equations, attention masks, model dimensionality and all table-level hyperparameters.
-- Paper-reported numerical results: **not copied into output and not asserted reproduced**.
-- Optimization: `none`. `WOA` is a bounded search implementation; `Optuna` uses a TPE sampler; `CBO` is an explicitly **illustrative search**, not an exact verified billiards optimizer. Verify the original equations and search budgets before paper-level comparison.
-- Residual model: `none`. Fits residuals ONLY on an independent chronological calibration slice.
-- Informer-type modules: sampled-key sparse-query attention prototype, not full original Informer (e.g., no generative decoder).
-- SOH vs RUL vs irradiance: **set and verify target separately**. In `--smoke`, target is generated synthetically and has no experimental meaning.
-- Batteries: this initial package accepts cycle-level CSV; extraction from NASA/CALCE `.mat`, group-wise cell-level holdouts, SOH formula and any capacity feature leakage need paper-specific scrutiny.
-- Multi-step forecasting: current package produces *one* target per input window; forecasting horizon and multivariate multi-step protocol must be implemented exactly for WHDMNet and any multi-step studies.
-- Before scientific release: verify all preprocessing, datasets, chronological/group splits, no leakage, baselines, ablations, uncertainty, confidence intervals, compute budget, seeds, optimizer details, deterministic settings.
+**Study:** A hybrid deep learning framework for global irradiance prediction using fuzzy C-Means, CNN-WNN, and Informer models  
+**DOI:** https://doi.org/10.1016/j.clet.2025.101061
 
-## Data governance
+## Scope of implementation
 
-Data is excluded from Git by `.gitignore`; no credentials stored. This code is prepared for a **private repository**, not yet published.
+The code combines fuzzy memberships, convolutional and wavelet-oriented processing, and a sparse attention layer for irradiance forecasting.
+
+The current attention module is a sampled-key sparse prototype, rather than a verified full ProbSparse Informer implementation. Verify the precise architecture, data partitions and selected climatological features before comparing results.
+
+## Data handling and evaluation
+
+Measured data are supplied as an external time-ordered CSV rather than packaged with the source code. Normalization statistics and fuzzy-regime parameters, where used, must be fitted on training observations only. Input windows must not include future target values.
+
+The default training workflow uses chronological partitions for model development, residual calibration (when applicable), validation and final evaluation. Multiple cities, sites, meteorological regimes or horizons need separately documented holdout protocols; a successful single-series run is not evidence of generalization.
+
+## Reporting requirements
+
+A repeatable experiment records the source dataset and its license, feature definitions, sampling period, target units, forecast horizon, random seeds, optimizer budget, train/test boundaries and all metric definitions. The software check `python train.py --smoke` uses simulated signals and serves only to validate execution.
+
+Paper-level numerical agreement has not been independently established. The results of new runs should be reported as new experiments, with explicit comparison settings rather than attributed to the published results.
